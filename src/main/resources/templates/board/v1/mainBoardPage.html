@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:replace="board/fragments/header :: header"></div>
+<button type="button" th:onclick="|location.href='@{/board/add}'|">글쓰기</button>
+<table style="text-align: center"
+    th:width="200"
+    th:height="200"
+    cellspacing="5">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>제목</th>
+            <th>조회수</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="board : ${list}" align="center" style="cursor: pointer"
+            th:onclick="|location.href='@{/board/{boardId}(boardId=${board.id})}'|">
+            <td th:text="${board.id}" ></td>
+            <td th:text="${board.title}"></td>
+            <td th:text="${board.readCount}"></td>
+        </tr>
+    </tbody>
+</table>
+
+<nav style="text-align: center;">
+<!-- 현제 페이지 number 에 따라서 1~10,11~20 버튼 나눠서 출력-->
+    <ul class="pagination" th:with="start=${T(java.lang.Math).floor(list.number/10)*10+1},
+                                        last=(${start + 9 < list.totalPages ? start + 9 : list.totalPages})">
+        <span>
+            <a th:href="@{board(page=1)}" aria-label="First">
+                <span aria-hidden="true">First</span>
+            </a>
+        </span>
+        <span th:class="${list.first} ? 'disabled'">
+            <a th:href="${list.first} ? '#' : @{/board(page=${list.number})}" aria-label="Previous">
+                <span aria-hidden="true">&lt;</span>
+            </a>
+        </span>
+        <span th:each="page : ${#numbers.sequence(start,last)}" th:class="${page == list.number + 1} ? 'active'">
+            <a th:text="${page}" th:href="@{/board(page=${page})}"></a>
+        </span>
+        <span th:class="${list.last} ? 'disabled'">
+            <a th:href="${list.last} ? '#' : @{/board(page=${list.number+2})}" aria-label="Next">
+                <span aria-hidden="true">&gt;</span>
+            </a>
+        </span>
+        <span>
+            <a th:href="@{/board(page = ${list.totalPages})}" aria-label="Last">
+                <span aria-hidden="true">Last</span>
+            </a>
+        </span>
+    </ul>
+</nav>
+
+
+</body>
+</html>
